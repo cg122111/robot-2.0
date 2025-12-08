@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Control Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Robot Control Interface</h1>
+            <p>3-Axis Control System</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <h2>Control Panel</h2>
+                
+                <!-- Rotate Axis -->
+                <div class="axis-control">
+                    <h3>Rotate</h3>
+                    <div class="control-buttons">
+                        <button class="btn btn-decrease" data-axis="rotate" data-direction="-1">-</button>
+                        <div class="value-display">
+                            <span class="value" id="rotate-value">0°</span>
+                        </div>
+                        <button class="btn btn-increase" data-axis="rotate" data-direction="1">+</button>
+                    </div>
+                    <input type="range" class="slider" id="rotate-slider" min="-180" max="180" value="0">
+                </div>
+
+                <!-- Elevate Axis -->
+                <div class="axis-control">
+                    <h3>Elevate</h3>
+                    <div class="control-buttons">
+                        <button class="btn btn-decrease" data-axis="elevate" data-direction="-1">-</button>
+                        <div class="value-display">
+                            <span class="value" id="elevate-value">0°</span>
+                        </div>
+                        <button class="btn btn-increase" data-axis="elevate" data-direction="1">+</button>
+                    </div>
+                    <input type="range" class="slider" id="elevate-slider" min="-90" max="90" value="0">
+                </div>
+
+                <!-- Pinch Axis -->
+                <div class="axis-control">
+                    <h3>Pinch</h3>
+                    <div class="control-buttons">
+                        <button class="btn btn-decrease" data-axis="pinch" data-direction="-1">-</button>
+                        <div class="value-display">
+                            <span class="value" id="pinch-value">0%</span>
+                        </div>
+                        <button class="btn btn-increase" data-axis="pinch" data-direction="1">+</button>
+                    </div>
+                    <input type="range" class="slider" id="pinch-slider" min="0" max="100" value="0">
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-reset" id="reset-btn">Reset All</button>
+                    <button class="btn btn-home" id="home-btn">Home Position</button>
+                </div>
+            </div>
+
+            <div class="visualization-panel">
+                <h2>3D Visualization</h2>
+                <div id="canvas-container"></div>
+                <div class="status-info">
+                    <div class="status-item">
+                        <span class="status-label">Rotate:</span>
+                        <span class="status-value" id="status-rotate">0°</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Elevate:</span>
+                        <span class="status-value" id="status-elevate">0°</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Pinch:</span>
+                        <span class="status-value" id="status-pinch">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
