@@ -15,6 +15,7 @@ CORS(app)  # Enable CORS for local development
 # Current robot state
 robot_state = {
     'rotate': 0,
+    'extend': 0,
     'elevate': 0,
     'pinch': 0
 }
@@ -34,6 +35,7 @@ def robot_state_endpoint():
         if data:
             robot_state.update({
                 'rotate': data.get('rotate', robot_state['rotate']),
+                'extend': data.get('extend', robot_state['extend']),
                 'elevate': data.get('elevate', robot_state['elevate']),
                 'pinch': data.get('pinch', robot_state['pinch'])
             })
@@ -49,6 +51,7 @@ def reset_robot():
     global robot_state
     robot_state = {
         'rotate': 0,
+        'extend': 0,
         'elevate': 0,
         'pinch': 0
     }

@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <h1>🤖 Robot Control Interface</h1>
-            <p>3-Axis Control System</p>
+            <p>4-Axis Control System</p>
         </header>
 
         <div class="main-content">
@@ -30,9 +30,22 @@
                     <input type="range" class="slider" id="rotate-slider" min="-180" max="180" value="0">
                 </div>
 
-                <!-- Elevate Axis -->
+                <!-- Arm Extension Axis -->
                 <div class="axis-control">
-                    <h3>Elevate</h3>
+                    <h3>Arm Extension</h3>
+                    <div class="control-buttons">
+                        <button class="btn btn-decrease" data-axis="extend" data-direction="-1">-</button>
+                        <div class="value-display">
+                            <span class="value" id="extend-value">0%</span>
+                        </div>
+                        <button class="btn btn-increase" data-axis="extend" data-direction="1">+</button>
+                    </div>
+                    <input type="range" class="slider" id="extend-slider" min="0" max="100" value="0">
+                </div>
+
+                <!-- Elevate Axis (Up and Down) -->
+                <div class="axis-control">
+                    <h3>Up and Down</h3>
                     <div class="control-buttons">
                         <button class="btn btn-decrease" data-axis="elevate" data-direction="-1">-</button>
                         <div class="value-display">
@@ -71,13 +84,46 @@
                         <span class="status-value" id="status-rotate">0°</span>
                     </div>
                     <div class="status-item">
-                        <span class="status-label">Elevate:</span>
+                        <span class="status-label">Extension:</span>
+                        <span class="status-value" id="status-extend">0%</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Up/Down:</span>
                         <span class="status-value" id="status-elevate">0°</span>
                     </div>
                     <div class="status-item">
                         <span class="status-label">Pinch:</span>
                         <span class="status-value" id="status-pinch">0%</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="programming-panel">
+            <h2>Movement Programming</h2>
+            
+            <div class="programming-controls">
+                <div class="program-input-group">
+                    <input type="text" id="program-name" placeholder="Enter program name..." class="program-input">
+                    <button class="btn btn-save" id="save-program-btn">Save Current Position</button>
+                </div>
+                
+                <div class="program-actions">
+                    <button class="btn btn-record" id="start-recording-btn">Start Recording</button>
+                    <button class="btn btn-stop" id="stop-recording-btn" disabled>Stop Recording</button>
+                    <button class="btn btn-clear" id="clear-recording-btn">Clear Recording</button>
+                </div>
+                
+                <div class="recording-status" id="recording-status" style="display: none;">
+                    <span class="recording-indicator"></span>
+                    <span>Recording... <span id="recording-count">0</span> positions saved</span>
+                </div>
+            </div>
+
+            <div class="programs-list">
+                <h3>Saved Programs</h3>
+                <div id="programs-container">
+                    <p class="no-programs">No programs saved yet. Record a movement sequence to get started.</p>
                 </div>
             </div>
         </div>
