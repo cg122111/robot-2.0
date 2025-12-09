@@ -46,6 +46,8 @@ A web-based control interface for a 3-axis robot arm with visual emulator. Desig
    pip install --upgrade pip
    pip install -r requirements.txt
    ```
+   
+   **Note**: The `requirements.txt` includes `pyserial` for G-code stepper motor control. If you only need emulator mode, you can skip installing it.
 
 5. **Activate the virtual environment** (whenever you work on the project):
    ```bash
@@ -90,26 +92,80 @@ A web-based control interface for a 3-axis robot arm with visual emulator. Desig
 
 ## Hardware Integration
 
-The Flask backend (`app.py`) includes endpoints ready for hardware integration:
+The Flask backend (`app.py`) includes G-code support for controlling stepper motors via serial communication (Marlin-compatible controllers).
 
-- `POST /api/robot/state`: Receives robot state updates
+### G-Code Stepper Motor Control
+
+The robot interface can send G-code commands to stepper motors connected via USB serial port. The system maps robot axes to motors:
+
+- **Rotate** → M1 (X-axis)
+- **Extend** → M2 (Y-axis)
+- **Elevate** → M3 (Z-axis)
+- **Pinch** → M4 (E-axis)
+
+### Enabling Hardware Control
+
+By default, hardware control is **disabled** (emulator mode). To enable G-code control:
+
+1. **Set environment variable**:
+   ```bash
+   export ENABLE_HARDWARE=true
+   export SERIAL_PORT=/dev/ttyUSB0  # Adjust to your port
+   python app.py
+   ```
+
+2. **Or modify the code** in `app.py`:
+   ```python
+   ENABLE_HARDWARE = True
+   SERIAL_PORT = "/dev/ttyUSB0"  # Your serial port
+   ```
+
+### Configuration
+
+The system uses configurable step conversion factors:
+
+- `STEPS_PER_DEGREE_ROTATE`: Steps per degree for rotation (default: 10.0)
+- `STEPS_PER_PERCENT_EXTEND`: Steps per percent for extension (default: 5.0)
+- `STEPS_PER_DEGREE_ELEVATE`: Steps per degree for elevation (default: 10.0)
+- `STEPS_PER_PERCENT_PINCH`: Steps per percent for pinch (default: 3.0)
+
+Adjust these values in `app.py` based on your motor/gear configuration, or use the configuration API endpoint.
+
+### API Endpoints
+
+- `POST /api/robot/state`: Receives robot state updates and sends G-code commands
 - `POST /api/robot/reset`: Resets robot to default position
+- `GET /api/robot/config`: Get current configuration
+- `POST /api/robot/config`: Update configuration (step conversion factors, hardware enable, serial port)
 - `GET /api/health`: Health check endpoint
 
-To integrate with actual hardware, modify the `robot_state_endpoint()` function in `app.py` to send commands to your motor controllers (e.g., GPIO pins, I2C devices, serial communication).
+### Configuration API Example
 
-### Example Hardware Integration
+```bash
+# Get current configuration
+curl http://localhost:5000/api/robot/config
 
-```python
-import RPi.GPIO as GPIO
-
-# In robot_state_endpoint():
-# GPIO.setmode(GPIO.BCM)
-# # Control servo motors based on robot_state values
-# # rotate_servo.angle = robot_state['rotate']
-# # elevate_servo.angle = robot_state['elevate']
-# # pinch_servo.position = robot_state['pinch']
+# Update step conversion factors
+curl -X POST http://localhost:5000/api/robot/config \
+  -H "Content-Type: application/json" \
+  -d '{
+    "steps_per_degree_rotate": 20.0,
+    "enable_hardware": true,
+    "serial_port": "/dev/ttyUSB0"
+  }'
 ```
+
+### G-Code Commands Sent
+
+When hardware is enabled, the system sends the following G-code sequence for each movement:
+
+1. `G91` - Set relative positioning mode
+2. `M211 S0` - Disable soft endstops
+3. `G92 X0 Y0 Z0 E0` - Zero all axes
+4. `G1 {axis}{steps} F{feedrate}` - Move motor
+5. `M400` - Wait for movement to complete
+
+The default feedrate is 2000 steps/second, configurable in the code.
 
 ## File Structure
 
