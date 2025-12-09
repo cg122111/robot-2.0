@@ -41,7 +41,8 @@ STEPS_PER_DEGREE_ELEVATE = 10.0  # steps per degree for elevation
 STEPS_PER_PERCENT_PINCH = 3.0    # steps per percent for pinch
 
 # Enable/disable hardware control (set to False to run in emulator mode)
-ENABLE_HARDWARE = os.environ.get('ENABLE_HARDWARE', 'false').lower() == 'true'
+# Can be overridden with ENABLE_HARDWARE environment variable
+ENABLE_HARDWARE = os.environ.get('ENABLE_HARDWARE', 'true').lower() == 'true'
 SERIAL_PORT = os.environ.get('SERIAL_PORT', DEFAULT_PORT)
 
 # Current robot state

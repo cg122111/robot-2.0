@@ -13,6 +13,12 @@ let recordedPositions = [];
 let isPlaying = false;
 let currentProgram = null;
 
+// Hardware control state
+let hardwareConfig = {
+    enable_hardware: false,
+    serial_port: '/dev/ttyUSB0'
+};
+
 // Three.js scene setup
 let scene, camera, renderer, robotGroup;
 let base, arm1, arm2, gripper;
@@ -322,6 +328,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Movement programming event listeners
     setupProgrammingControls();
     loadPrograms();
+    
+    // Hardware control event listeners
+    setupHardwareControls();
+    loadHardwareConfig();
 });
 
 // Movement Programming Functions
@@ -671,5 +681,99 @@ function deleteProgram(index) {
     programs.splice(index, 1);
     localStorage.setItem('robotPrograms', JSON.stringify(programs));
     loadPrograms();
+}
+
+// Hardware Control Functions
+function setupHardwareControls() {
+    document.getElementById('hardware-enable-btn').addEventListener('click', enableHardware);
+    document.getElementById('hardware-disable-btn').addEventListener('click', disableHardware);
+}
+
+function loadHardwareConfig() {
+    fetch('/api/robot/config')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.config) {
+                hardwareConfig = data.config;
+                updateHardwareUI();
+            }
+        })
+        .catch(err => {
+            console.log('Failed to load hardware config:', err);
+            updateHardwareUI(); // Show disabled state
+        });
+}
+
+function updateHardwareUI() {
+    const statusDot = document.getElementById('hardware-status-dot');
+    const statusText = document.getElementById('hardware-status-text');
+    const hardwareInfo = document.getElementById('hardware-info');
+    const serialPortDisplay = document.getElementById('serial-port-display');
+    const enableBtn = document.getElementById('hardware-enable-btn');
+    const disableBtn = document.getElementById('hardware-disable-btn');
+    
+    if (hardwareConfig.enable_hardware) {
+        statusDot.className = 'status-dot enabled';
+        statusText.textContent = 'Hardware Enabled';
+        hardwareInfo.style.display = 'block';
+        serialPortDisplay.textContent = hardwareConfig.serial_port || '/dev/ttyUSB0';
+        enableBtn.style.display = 'none';
+        disableBtn.style.display = 'block';
+    } else {
+        statusDot.className = 'status-dot disabled';
+        statusText.textContent = 'Hardware Disabled (Emulator Mode)';
+        hardwareInfo.style.display = 'none';
+        enableBtn.style.display = 'block';
+        disableBtn.style.display = 'none';
+    }
+}
+
+function enableHardware() {
+    const config = {
+        enable_hardware: true,
+        serial_port: hardwareConfig.serial_port || '/dev/ttyUSB0'
+    };
+    
+    updateHardwareConfig(config, () => {
+        alert('Hardware enabled! G-code commands will now be sent to stepper motors.');
+    });
+}
+
+function disableHardware() {
+    if (!confirm('Disable hardware control? The robot will run in emulator mode.')) {
+        return;
+    }
+    
+    const config = {
+        enable_hardware: false
+    };
+    
+    updateHardwareConfig(config, () => {
+        alert('Hardware disabled. Running in emulator mode.');
+    });
+}
+
+function updateHardwareConfig(config, callback) {
+    fetch('/api/robot/config', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            hardwareConfig = { ...hardwareConfig, ...config };
+            updateHardwareUI();
+            if (callback) callback();
+        } else {
+            alert('Failed to update hardware configuration');
+        }
+    })
+    .catch(err => {
+        console.error('Error updating hardware config:', err);
+        alert('Error updating hardware configuration. Make sure the server is running.');
+    });
 }
 

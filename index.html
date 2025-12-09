@@ -17,6 +17,27 @@
             <div class="control-panel">
                 <h2>Control Panel</h2>
                 
+                <!-- Hardware Control -->
+                <div class="hardware-control">
+                    <h3>Hardware Control</h3>
+                    <div class="hardware-status">
+                        <div class="status-indicator">
+                            <span class="status-dot" id="hardware-status-dot"></span>
+                            <span id="hardware-status-text">Checking...</span>
+                        </div>
+                        <div class="hardware-info" id="hardware-info" style="display: none;">
+                            <div class="info-item">
+                                <span class="info-label">Serial Port:</span>
+                                <span class="info-value" id="serial-port-display">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hardware-buttons">
+                        <button class="btn btn-hardware-enable" id="hardware-enable-btn">Enable Hardware</button>
+                        <button class="btn btn-hardware-disable" id="hardware-disable-btn" style="display: none;">Disable Hardware</button>
+                    </div>
+                </div>
+                
                 <!-- Rotate Axis -->
                 <div class="axis-control">
                     <h3>Rotate</h3>

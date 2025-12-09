@@ -228,6 +228,102 @@ header p {
     color: #667eea;
 }
 
+.hardware-control {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+}
+
+.hardware-control h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.hardware-status {
+    margin-bottom: 15px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #6c757d;
+}
+
+.status-dot.enabled {
+    background: #28a745;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+}
+
+.status-dot.disabled {
+    background: #dc3545;
+}
+
+.hardware-info {
+    margin-top: 10px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.info-label {
+    color: #6c757d;
+    font-weight: bold;
+}
+
+.info-value {
+    color: #495057;
+    font-family: monospace;
+}
+
+.hardware-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-hardware-enable {
+    background: #28a745;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1em;
+    flex: 1;
+}
+
+.btn-hardware-enable:hover {
+    background: #218838;
+}
+
+.btn-hardware-disable {
+    background: #dc3545;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1em;
+    flex: 1;
+}
+
+.btn-hardware-disable:hover {
+    background: #c82333;
+}
+
 .programming-panel {
     background: white;
     border-radius: 15px;
