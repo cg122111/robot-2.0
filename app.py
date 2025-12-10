@@ -19,7 +19,7 @@ CORS(app)  # Enable CORS for local development
 DEFAULT_PORT = "/dev/ttyUSB0"
 BAUDRATE = 115200
 READ_TIMEOUT = 2.0
-FEEDRATE = 2000
+FEEDRATE = 50000
 
 # Motor to axis mapping
 # M1 -> X (Rotate)
