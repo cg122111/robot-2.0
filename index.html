@@ -38,6 +38,33 @@
                     </div>
                 </div>
                 
+                <!-- Motion Settings -->
+                <div class="motion-settings">
+                    <h3>Motion Settings</h3>
+                    <div class="setting-control">
+                        <label for="feedrate-input">Feedrate (steps/second):</label>
+                        <div class="setting-input-group">
+                            <input type="number" id="feedrate-input" class="setting-input" min="1000" max="500000" value="120000" step="1000">
+                            <button class="btn btn-apply" id="apply-feedrate-btn">Apply</button>
+                        </div>
+                        <div class="setting-display">
+                            <span class="setting-label">Current:</span>
+                            <span class="setting-value" id="feedrate-display">120000</span>
+                        </div>
+                    </div>
+                    <div class="setting-control">
+                        <label for="steps-per-second-input">Steps per Second:</label>
+                        <div class="setting-input-group">
+                            <input type="number" id="steps-per-second-input" class="setting-input" min="1000" max="500000" value="120000" step="1000">
+                            <button class="btn btn-apply" id="apply-steps-btn">Apply</button>
+                        </div>
+                        <div class="setting-display">
+                            <span class="setting-label">Current:</span>
+                            <span class="setting-value" id="steps-display">120000</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Rotate Axis -->
                 <div class="axis-control">
                     <h3>Rotate</h3>

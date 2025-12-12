@@ -16,7 +16,8 @@ let currentProgram = null;
 // Hardware control state
 let hardwareConfig = {
     enable_hardware: false,
-    serial_port: '/dev/ttyUSB0'
+    serial_port: '/dev/ttyUSB0',
+    feedrate: 120000
 };
 
 // Three.js scene setup
@@ -332,6 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hardware control event listeners
     setupHardwareControls();
     loadHardwareConfig();
+    
+    // Motion settings event listeners
+    setupMotionSettings();
 });
 
 // Movement Programming Functions
@@ -694,8 +698,9 @@ function loadHardwareConfig() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success' && data.config) {
-                hardwareConfig = data.config;
+                hardwareConfig = { ...hardwareConfig, ...data.config };
                 updateHardwareUI();
+                loadMotionSettings();
             }
         })
         .catch(err => {
@@ -775,5 +780,99 @@ function updateHardwareConfig(config, callback) {
         console.error('Error updating hardware config:', err);
         alert('Error updating hardware configuration. Make sure the server is running.');
     });
+}
+
+// Motion Settings Functions
+function setupMotionSettings() {
+    // Feedrate control
+    document.getElementById('apply-feedrate-btn').addEventListener('click', () => {
+        const feedrate = parseInt(document.getElementById('feedrate-input').value);
+        if (feedrate >= 1000 && feedrate <= 500000) {
+            updateFeedrate(feedrate);
+        } else {
+            alert('Feedrate must be between 1000 and 500000 steps/second');
+        }
+    });
+    
+    // Steps per second control (same as feedrate)
+    document.getElementById('apply-steps-btn').addEventListener('click', () => {
+        const steps = parseInt(document.getElementById('steps-per-second-input').value);
+        if (steps >= 1000 && steps <= 500000) {
+            updateFeedrate(steps);
+        } else {
+            alert('Steps per second must be between 1000 and 500000');
+        }
+    });
+    
+    // Allow Enter key to apply
+    document.getElementById('feedrate-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('apply-feedrate-btn').click();
+        }
+    });
+    
+    document.getElementById('steps-per-second-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('apply-steps-btn').click();
+        }
+    });
+}
+
+function updateFeedrate(feedrate) {
+    const config = {
+        feedrate: feedrate
+    };
+    
+    fetch('/api/robot/config', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(config)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            hardwareConfig.feedrate = feedrate;
+            document.getElementById('feedrate-display').textContent = feedrate;
+            document.getElementById('steps-display').textContent = feedrate;
+            document.getElementById('feedrate-input').value = feedrate;
+            document.getElementById('steps-per-second-input').value = feedrate;
+            
+            // Show feedback
+            const btn = document.getElementById('apply-feedrate-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Applied!';
+            btn.style.background = '#28a745';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1000);
+        } else {
+            alert('Failed to update feedrate');
+        }
+    })
+    .catch(err => {
+        console.error('Error updating feedrate:', err);
+        alert('Error updating feedrate. Make sure the server is running.');
+    });
+}
+
+function loadMotionSettings() {
+    fetch('/api/robot/config')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.config) {
+                const feedrate = data.config.feedrate || 120000;
+                hardwareConfig.feedrate = feedrate;
+                document.getElementById('feedrate-input').value = feedrate;
+                document.getElementById('steps-per-second-input').value = feedrate;
+                document.getElementById('feedrate-display').textContent = feedrate;
+                document.getElementById('steps-display').textContent = feedrate;
+            }
+        })
+        .catch(err => {
+            console.log('Failed to load motion settings:', err);
+        });
 }
 

@@ -19,7 +19,7 @@ CORS(app)  # Enable CORS for local development
 DEFAULT_PORT = "/dev/ttyUSB0"
 BAUDRATE = 115200
 READ_TIMEOUT = 2.0
-FEEDRATE = 50000
+FEEDRATE = 120000  # Default feedrate (steps per second)
 
 # Motor to axis mapping
 # M1 -> X (Rotate)
@@ -174,16 +174,10 @@ gcode_controller = GCodeController(SERIAL_PORT, BAUDRATE, READ_TIMEOUT)
 def convert_to_steps(axis, value, previous_value):
     """Convert robot state value to motor steps (relative)"""
     delta = value - previous_value
-    
-    if axis == 'rotate':
-        return int(delta * STEPS_PER_DEGREE_ROTATE)
-    elif axis == 'extend':
-        return int(delta * STEPS_PER_PERCENT_EXTEND)
-    elif axis == 'elevate':
-        return int(delta * STEPS_PER_DEGREE_ELEVATE)
-    elif axis == 'pinch':
-        return int(delta * STEPS_PER_PERCENT_PINCH)
-    return 0
+    if delta == 0:
+        return 0
+    # Always move a fixed 2000 steps in the direction of change
+    return 2000 if delta > 0 else -2000
 
 
 def send_motor_commands(new_state, old_state):
@@ -274,7 +268,7 @@ def robot_config():
     """Get or update robot configuration"""
     global STEPS_PER_DEGREE_ROTATE, STEPS_PER_PERCENT_EXTEND
     global STEPS_PER_DEGREE_ELEVATE, STEPS_PER_PERCENT_PINCH
-    global ENABLE_HARDWARE, SERIAL_PORT
+    global ENABLE_HARDWARE, SERIAL_PORT, FEEDRATE
     
     if request.method == 'POST':
         data = request.get_json()
@@ -293,6 +287,13 @@ def robot_config():
                 SERIAL_PORT = data['serial_port']
                 gcode_controller.port = SERIAL_PORT
                 gcode_controller.disconnect()
+            if 'feedrate' in data:
+                feedrate_value = int(data['feedrate'])
+                if 1000 <= feedrate_value <= 500000:
+                    FEEDRATE = feedrate_value
+                    print(f"Feedrate updated to {FEEDRATE} steps/second")
+                else:
+                    return jsonify({'status': 'error', 'message': 'Feedrate must be between 1000 and 500000'}), 400
             
             return jsonify({'status': 'success', 'message': 'Configuration updated'})
     
