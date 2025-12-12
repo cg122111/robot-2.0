@@ -176,8 +176,8 @@ def convert_to_steps(axis, value, previous_value):
     delta = value - previous_value
     if delta == 0:
         return 0
-    # Always move a fixed 2000 steps in the direction of change
-    return 2000 if delta > 0 else -2000
+    # Always move a fixed 1750 steps in the direction of change
+    return 1750 if delta > 0 else -1750
 
 
 def send_motor_commands(new_state, old_state):
